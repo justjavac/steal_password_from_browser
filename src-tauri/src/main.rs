@@ -5,7 +5,7 @@ use std::io;
 use winreg::enums::{HKEY_LOCAL_MACHINE, KEY_READ};
 use winreg::RegKey;
 
-const PREFIX: &'static str = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
+const PREFIX: &str = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
 
 #[derive(Serialize, Deserialize)]
 struct Browser {
@@ -42,8 +42,11 @@ fn browserslist() -> Vec<Browser> {
   ]
   .iter()
   .map(|browser| Browser {
-    name: browser.to_string(),
-    installed: keys.iter().find(|it| it.as_ref().unwrap() == browser).is_some(),
+    name: browser
+      .trim_start_matches("Google ")
+      .trim_start_matches("Microsoft ")
+      .to_string(),
+    installed: keys.iter().any(|it| it.as_ref().unwrap() == browser),
   })
   .collect::<Vec<Browser>>()
 }
