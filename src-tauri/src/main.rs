@@ -53,6 +53,7 @@ fn browserslist() -> Vec<Browser> {
 
 #[tauri::command]
 fn passwordslist(_browser: String) -> Vec<Password> {
+  println!("{}", browser);
   vec![
     Password {
       url: "https://github.com".to_string(),
