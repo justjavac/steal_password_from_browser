@@ -79,6 +79,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Build web
+        run: yarn build
+
       - name: Run cargo fmt
         run: cargo fmt --all -- --check
         working-directory: src-tauri
@@ -94,9 +97,6 @@ jobs:
       - name: Run cargo test
         run: cargo test --locked
         working-directory: src-tauri
-
-      - name: Build web
-        run: yarn build
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
