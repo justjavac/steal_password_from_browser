@@ -1,6 +1,11 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
+use std::io;
+use winreg::enums::{HKEY_LOCAL_MACHINE, KEY_READ};
+use winreg::RegKey;
+
+const PREFIX: &str = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
 
 #[derive(Serialize, Deserialize)]
 struct Browser {
@@ -17,52 +22,37 @@ struct Password {
 
 #[tauri::command]
 fn browserslist() -> Vec<Browser> {
+  let uninstall = RegKey::predef(HKEY_LOCAL_MACHINE)
+    .open_subkey_with_flags(PREFIX, KEY_READ)
+    .unwrap();
+
+  let keys = &uninstall.enum_keys().collect::<Vec<io::Result<String>>>();
+
   vec![
-    Browser {
-      name: "Chrome".to_string(),
-      installed: true,
-    },
-    Browser {
-      name: "Chrome Dev".to_string(),
-      installed: true,
-    },
-    Browser {
-      name: "Chrome Beta".to_string(),
-      installed: false,
-    },
-    Browser {
-      name: "Chrome Canary".to_string(),
-      installed: true,
-    },
-    Browser {
-      name: "Edge".to_string(),
-      installed: true,
-    },
-    Browser {
-      name: "Edge Dev".to_string(),
-      installed: false,
-    },
-    Browser {
-      name: "Edge Beta".to_string(),
-      installed: false,
-    },
-    Browser {
-      name: "Edge Canary".to_string(),
-      installed: true,
-    },
-    Browser {
-      name: "Edge Dev Preview".to_string(),
-      installed: false,
-    },
-    Browser {
-      name: "Edge Preview".to_string(),
-      installed: false,
-    },
+    "Google Chrome",
+    "Google Chrome Dev",
+    "Google Chrome Beta",
+    "Google Chrome Canary",
+    "Microsoft Edge",
+    "Microsoft Edge Dev",
+    "Microsoft Edge Beta",
+    "Microsoft Edge Canary",
+    "Microsoft Edge Dev Preview",
+    "Microsoft Edge Preview",
   ]
+  .iter()
+  .map(|browser| Browser {
+    name: browser
+      .trim_start_matches("Google ")
+      .trim_start_matches("Microsoft ")
+      .to_string(),
+    installed: keys.iter().any(|it| it.as_ref().unwrap() == browser),
+  })
+  .collect::<Vec<Browser>>()
 }
 
 #[tauri::command]
-fn passwordslist(browser: String) -> Vec<Password> {
+fn passwordslist(_browser: String) -> Vec<Password> {
   println!("{}", browser);
   vec![
     Password {
