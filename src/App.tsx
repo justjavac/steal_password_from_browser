@@ -24,7 +24,7 @@ function Empty() {
     <div className="w-full h-full flex items-center justify-center text-red-400">
       <h1>Click left to select a browser</h1>
     </div>
-  )
+  );
 }
 
 export default App;
