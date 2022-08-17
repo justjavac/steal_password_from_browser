@@ -8,7 +8,7 @@
       "lineWidth": 120
     },
     "files": {
-      "include": ["src/"]
+      "exclude": ["src-tauri/", "build/", "node_modules/", ".yarn/"]
     }
   }
 }
