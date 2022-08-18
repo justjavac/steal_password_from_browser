@@ -1,19 +1,24 @@
 #![cfg_attr(all(not(debug_assertions), target_os = "windows"), windows_subsystem = "windows")]
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
+use std::env;
 use std::io;
+
+#[cfg(windows)]
 use winreg::enums::{HKEY_LOCAL_MACHINE, KEY_READ};
+#[cfg(windows)]
 use winreg::RegKey;
 
+#[cfg(windows)]
 const PREFIX: &str = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 struct Browser {
   name: String,
   installed: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 struct Password {
   url: String,
   username: String,
@@ -22,11 +27,18 @@ struct Password {
 
 #[tauri::command]
 fn browserslist() -> Vec<Browser> {
-  let uninstall = RegKey::predef(HKEY_LOCAL_MACHINE)
+  #[cfg(windows)]
+  let keys = RegKey::predef(HKEY_LOCAL_MACHINE)
     .open_subkey_with_flags(PREFIX, KEY_READ)
-    .unwrap();
+    .unwrap()
+    .enum_keys()
+    .collect::<Vec<io::Result<String>>>();
 
-  let keys = &uninstall.enum_keys().collect::<Vec<io::Result<String>>>();
+  #[cfg(not(windows))]
+  let keys: Vec<io::Result<String>> = vec![
+    io::Result::Ok("Google Chrome".to_string()),
+    io::Result::Ok("Google Chrome Canary".to_string()),
+  ];
 
   vec![
     "Google Chrome",
@@ -52,24 +64,40 @@ fn browserslist() -> Vec<Browser> {
 }
 
 #[tauri::command]
-fn passwordslist(_browser: String) -> Vec<Password> {
+#[cfg(not(windows))]
+#[allow(unused_variables)]
+fn passwordslist(browser: String) -> Vec<Vec<String>> {
   vec![
-    Password {
-      url: "https://github.com".to_string(),
-      username: "admin".to_string(),
-      password: "12345678".to_string(),
-    },
-    Password {
-      url: "https://baidu.com".to_string(),
-      username: "root".to_string(),
-      password: "12345678".to_string(),
-    },
-    Password {
-      url: "https://google.com".to_string(),
-      username: "justjavac".to_string(),
-      password: "12345678".to_string(),
-    },
+    vec![
+      "https://www.github.com".to_string(),
+      "admin".to_string(),
+      "12345678".to_string(),
+    ],
+    vec![
+      "https://www.baidu.com".to_string(),
+      "root".to_string(),
+      "12345678".to_string(),
+    ],
+    vec![
+      "https://www.google.com".to_string(),
+      "justjavac".to_string(),
+      "12345678".to_string(),
+    ],
   ]
+}
+
+#[tauri::command]
+#[cfg(windows)]
+fn passwordslist(browser: String) -> Vec<Vec<String>> {
+  use chrome_password::{get_master_key, get_password};
+  use std::path::PathBuf;
+
+  let user_profile = env::var("LOCALAPPDATA").unwrap();
+  let browser_path = PathBuf::from(&user_profile).join("Google").join(&browser);
+  let local_state_path = browser_path.join("User Data/Local State");
+  let login_data_path = browser_path.join("User Data/Default/Login Data");
+
+  get_password(&login_data_path, &get_master_key(&local_state_path))
 }
 
 fn main() {

@@ -1,10 +1,9 @@
 import { useState } from "react";
 
-export interface Password {
-  url: string;
-  username: string;
-  password: string;
-}
+/**
+ * [url, username, password]
+ */
+export type Password  = [string, string, string];
 
 export function Passwordslist({ passwords }: { passwords: readonly Password[] }) {
   const [search, setSearch] = useState<string>("");
@@ -42,11 +41,11 @@ export function Passwordslist({ passwords }: { passwords: readonly Password[] })
       <div className="h-full border-t border-gray-700 overscroll-contain overflow-auto">
         <table className="w-full table-fixed border-separate border-spacing-2 mx-4">
           <tbody>
-            {passwords.filter((x) => x.url.includes(search))?.map((x) => (
-              <tr key={x.url}>
-                <td className="text-sm dark:text-white">{x.url}</td>
-                <td className="text-sm dark:text-white">{x.username}</td>
-                <td className="text-sm dark:text-white">{x.password}</td>
+            {passwords.filter((x) => x[0].includes(search))?.map((x) => (
+              <tr key={x[0]}>
+                <td className="text-sm dark:text-white">{x[0]}</td>
+                <td className="text-sm dark:text-white">{x[1]}</td>
+                <td className="text-sm dark:text-white">{x[2]}</td>
               </tr>
             ))}
           </tbody>
