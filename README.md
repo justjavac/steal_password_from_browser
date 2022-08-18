@@ -24,6 +24,11 @@ Every password is encrypted with a different random key and stored in a small
 database(sqlite) on the computer. The database can be found in the directory
 `%LocalAppData%\Google\Chrome\User Data\Default\Login Data`.
 
+## Related projects
+
+- [chrome_password.rs](https://github.com/justjavac/chrome_password.rs)
+- [chrome_password node.js](https://github.com/justjavac/chrome_password.js)
+
 ## License
 
 [steal_password_from_browser](https://github.com/justjavac/steal_password_from_browser)
