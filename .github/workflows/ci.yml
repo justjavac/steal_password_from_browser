@@ -100,4 +100,5 @@ jobs:
         with:
           files: |
             src-tauri/target/release/chrome_password_ui-x86_64-pc-windows-msvc.zip
+            src-tauri/target/release/bundle/msi/chrome_password_ui_*.msi
           draft: true
