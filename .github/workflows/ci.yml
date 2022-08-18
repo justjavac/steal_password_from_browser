@@ -37,6 +37,8 @@ jobs:
 
       - name: Install node
         uses: actions/setup-node@v3
+        with:
+          cache: yarn
 
       - name: Install Deno
         uses: denoland/setup-deno@v1
@@ -48,25 +50,18 @@ jobs:
           node --version
           deno --version
 
-      - name: Configure cargo data directory
-        # After this point, all cargo registry and crate data is stored in
-        # $GITHUB_WORKSPACE/.cargo_home. This allows us to cache only the files
-        # that are needed during the build process. Additionally, this works
-        # around a bug in the 'cache' action that causes directories outside of
-        # the workspace dir to be saved/restored incorrectly.
-        run: |
-          echo "CARGO_HOME=$(pwd)/.cargo_home" >> $GITHUB_ENV
-
       - name: Cache cargo dependencies
         uses: actions/cache@v2
         with:
           path: |-
-            .cargo_home
-            target/*/.*
-            target/*/build
-            target/*/deps
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            src-tauri/target/*/.*
+            src-tauri/target/*/build
+            src-tauri/target/*/deps
           key:
-            ${{ matrix.config.os }}-${{ hashFiles('Cargo.lock') }}
+            ${{ matrix.config.os }}-${{ hashFiles('src-tauri/Cargo.lock') }}
           restore-keys: |
             ${{ matrix.config.os }}-
 
