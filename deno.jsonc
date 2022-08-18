@@ -8,7 +8,7 @@
       "lineWidth": 120
     },
     "files": {
-      "exclude": ["src-tauri/", "build/", "node_modules/", ".yarn/"]
+      "exclude": ["src-tauri/", "dist/", "node_modules/", ".yarn/", ".cache/"]
     }
   }
 }
