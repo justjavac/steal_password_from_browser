@@ -40,9 +40,6 @@ jobs:
         with:
           cache: yarn
 
-      - name: Install Deno
-        uses: denoland/setup-deno@v1
-
       - name: Log versions
         run: |
           rustc --version
