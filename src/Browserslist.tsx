@@ -27,7 +27,7 @@ export function Browserslist(props: BrowserslistProps) {
             active === x.name ? "bg-gray-600 font-medium dark:text-gray-300" : "bg-transparent"
           } ${
             x.installed
-              ? "cursor-pointer hover:text-gray-800 dark:text-white dark:hover:text-gray-300"
+              ? "cursor-pointer hover:text-gray-800 dark:text-white dark:hover:text-gray-300 hover:font-medium"
               : "text-gray-400 dark:text-gray-400"
           }`}
           onClick={() => {
