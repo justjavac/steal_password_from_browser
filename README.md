@@ -7,6 +7,10 @@
 Download the windows installer(.msi) from
 [release page](https://github.com/justjavac/steal_password_from_browser/releases).
 
+## Preview
+
+![](./screen.png)
+
 ## Under The Hood
 
 Chrome use a Windows system function called
