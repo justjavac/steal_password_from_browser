@@ -86,8 +86,7 @@ jobs:
       - name: Build App
         run: yarn tauri build
 
-      - name: Pre-release (windows)
-        if: startsWith(matrix.os, 'windows')
+      - name: Pre-release
         run: |
           Compress-Archive -CompressionLevel Optimal -Force -Path src-tauri/target/release/chrome_password_ui.exe -DestinationPath src-tauri/target/release/chrome_password_ui-x86_64-pc-windows-msvc.zip
 
