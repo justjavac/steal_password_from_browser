@@ -12,6 +12,19 @@ use winreg::RegKey;
 #[cfg(windows)]
 const PREFIX: &str = r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall";
 
+const BROWSERS: [&str; 10] = [
+  "Google Chrome",
+  "Google Chrome Dev",
+  "Google Chrome Beta",
+  "Google Chrome Canary",
+  "Microsoft Edge",
+  "Microsoft Edge Dev",
+  "Microsoft Edge Beta",
+  "Microsoft Edge Canary",
+  "Microsoft Edge Dev Preview",
+  "Microsoft Edge Preview",
+];
+
 #[derive(Serialize)]
 struct Browser {
   name: String,
@@ -40,27 +53,16 @@ fn browserslist() -> Vec<Browser> {
     io::Result::Ok("Google Chrome Canary".to_string()),
   ];
 
-  vec![
-    "Google Chrome",
-    "Google Chrome Dev",
-    "Google Chrome Beta",
-    "Google Chrome Canary",
-    "Microsoft Edge",
-    "Microsoft Edge Dev",
-    "Microsoft Edge Beta",
-    "Microsoft Edge Canary",
-    "Microsoft Edge Dev Preview",
-    "Microsoft Edge Preview",
-  ]
-  .iter()
-  .map(|browser| Browser {
-    name: browser
-      .trim_start_matches("Google ")
-      .trim_start_matches("Microsoft ")
-      .to_string(),
-    installed: keys.iter().any(|it| it.as_ref().unwrap() == browser),
-  })
-  .collect::<Vec<Browser>>()
+  BROWSERS
+    .iter()
+    .map(|browser| Browser {
+      name: browser
+        .trim_start_matches("Google ")
+        .trim_start_matches("Microsoft ")
+        .to_string(),
+      installed: keys.iter().any(|it| it.as_ref().unwrap() == browser),
+    })
+    .collect::<Vec<Browser>>()
 }
 
 #[tauri::command]
@@ -93,7 +95,13 @@ fn passwordslist(browser: String) -> Vec<Vec<String>> {
   use std::path::PathBuf;
 
   let user_profile = env::var("LOCALAPPDATA").unwrap();
-  let browser_path = PathBuf::from(&user_profile).join("Google").join(&browser);
+  let browser_path = PathBuf::from(&user_profile)
+    .join(if BROWSERS.iter().position(|it| it.contains(&browser)).unwrap() > 3 {
+      "Microsoft"
+    } else {
+      "Google"
+    })
+    .join(&browser);
   let local_state_path = browser_path.join("User Data/Local State");
   let login_data_path = browser_path.join("User Data/Default/Login Data");
 
