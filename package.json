@@ -1,6 +1,5 @@
 {
   "name": "chrome_password_ui",
-  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@twind/preact": "^1.0.5",
