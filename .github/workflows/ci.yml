@@ -40,13 +40,6 @@ jobs:
         with:
           cache: yarn
 
-      - name: Log versions
-        run: |
-          rustc --version
-          cargo --version
-          node --version
-          deno --version
-
       - name: Cache cargo dependencies
         uses: actions/cache@v3
         with:
